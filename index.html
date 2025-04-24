@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>口コミアシスタント（完全版）</title>
+  <style>
+    :root {
+      --main-color: #333;
+      --accent-color: #000;
+      --bg-color: #f4f4f4;
+      --text-color: #222;
+      --light-bg: #ffffff;
+      --box-bg: #fafafa;
+      --border-color: #ccc;
+      --input-text-color: #222;
+      --box-text-color: #222;
+    }
+    body {
+      font-family: sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 2em;
+    }
+    h2, h3 {
+      text-align: center;
+      color: var(--main-color);
+    }
+    .box {
+      background: var(--light-bg);
+      padding: 1em;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 1.5em auto;
+      border: 1px solid var(--border-color);
+      color: var(--box-text-color);
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.6em;
+      margin: 0.5em 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      box-sizing: border-box;
+      background: var(--light-bg);
+      color: var(--input-text-color);
+    }
+    .button {
+      background: var(--main-color);
+      color: white;
+      padding: 0.5em 1em;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .button:hover {
+      background: var(--accent-color);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .button-row {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1em;
+    }
+    .tone-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 90px;
+      margin: 0.5em;
+    }
+    .tone-option img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      transition: 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .tone-option img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .tone-option input[type="checkbox"] {
+      display: none;
+    }
+    .tone-option input[type="checkbox"]:checked + img {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 8px var(--accent-color);
+    }
+    .tone-label {
+      margin-top: 0.25em;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+    @media (max-width: 480px) {
+      .tone-option img {
+        width: 64px;
+        height: 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" style="text-align: center;">
+  <h2 style="margin-bottom: 0.5em;">あなたのサロンの口コミアシスタント</h2>
+  <img src="Assistant.png" style="width: 120px; height: auto; border-radius: 16px; margin-bottom: 1em;">
+  <div style="background: var(--light-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1em; max-width: 500px; margin: 0 auto; font-size: 0.95em; color: var(--text-color);">
+    お客様の声をもっと自然に、もっと素早く。<br>サロンの魅力を引き出す口コミ作成をサポートします。
+  </div>
+  <div class="button-row" style="margin-top: 1em;">
+    <button class="button" id="editButton" onclick="toggleEdit(true)">✏ 編集する</button>
+    <button class="button" id="lockButton" onclick="toggleEdit(false)">🔒 ロックする</button>
+  </div>
+</div>
+
+<div class="box">
+  <h3>店舗名</h3>
+  <input type="text" id="shopName" class="form-input" placeholder="店舗名を入力">
+</div>
+
+<div class="box">
+  <h3>スタッフ名</h3>
+  <div id="staff-container">
+    <input type="text" class="form-input" placeholder="スタッフ名を入力">
+  </div>
+  <div class="button-row">
+    <button class="button" onclick="addStaff()">＋ スタッフを追加</button>
+    <button class="button" onclick="resetStaff()">リセット</button>
+  </div>
+</div>
+
+<div class="box">
+  <h3>コース名・商品名</h3>
+  <div id="course-container">
+    <input type="text" class="form-input" placeholder="コース名または商品名を入力">
+  </div>
+  <div class="button-row">
+    <button class="button" onclick="addCourse()">＋ コースを追加</button>
+    <button class="button" onclick="loadPresetCourses()">💡 プリセット</button>
+    <button class="button" onclick="resetCourse()">リセット</button>
+  </div>
+</div>
+
+<div class="box">
+  <h3>感想ワード</h3>
+  <div id="comment-container">
+    <input type="text" class="form-input" placeholder="感想ワードを入力">
+  </div>
+  <div class="button-row">
+    <button class="button" onclick="addComment()">＋ 感想を追加</button>
+    <button class="button" onclick="loadPresetComments()">💡 プリセット</button>
+    <button class="button" onclick="resetComment()">リセット</button>
+  </div>
+</div>
+
+<div class="box">
+  <h3>口コミサイトのリンク</h3>
+  <input type="text" class="form-input" placeholder="Googleマップ（PC／Android 用）">
+  <input type="text" class="form-input" placeholder="Googleマップ（iPhone 用）">
+  <input type="text" class="form-input" placeholder="サロン公式サイトのURL（任意）">
+</div>
+
+<div class="box">
+  <h3>SNSリンク</h3>
+  <div id="sns-container">
+    <input type="text" class="form-input" placeholder="SNSリンクを入力">
+  </div>
+  <div class="button-row">
+    <button class="button" onclick="addSNS()">＋ SNSリンクを追加</button>
+    <button class="button" onclick="resetSNS()">リセット</button>
+  </div>
+</div> <!-- ←←← ←←← ←←← 修正済！ -->
+
+<div class="box">
+  <h3>テーマカラーを選択</h3>
+  <div class="button-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em; justify-items: center;">
+    <button class="button" onclick="setColors('#5e35b1', '#311b92', '#ede7f6', '#f3eaff', '#b39ddb')">ラベンダーグレージュ</button>
+    <button class="button" onclick="setColors('#6d4c41', '#3e2723', '#f5f5f5', '#f0e4dc', '#8d6e63')">カカオブラウン</button>
+    <button class="button" onclick="setColors('#388e3c', '#1b5e20', '#f1f8e9', '#e4f2e6', '#66bb6a')">フォレストグリーン</button>
+    <button class="button" onclick="setColors('#1976d2', '#0d47a1', '#e3f2fd', '#d6eafd', '#42a5f5')">ブルーグレー</button>
+  </div>
+  <div class="button-row">
+    <div class="color-preview" id="mainSample"></div>
+    <div class="color-preview" id="accentSample"></div>
+    <div class="color-preview" id="textSample"></div>
+    <div class="color-preview" id="lightSample"></div>
+    <div class="color-preview" id="borderSample"></div>
+  </div>
+</div>
+
+<div class="box">
+  <h3>性別スタイル</h3>
+  <div class="button-row">
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="男性口調">
+      <img src="male.png" alt="男性口調">
+      <div class="tone-label">男性口調</div>
+    </label>
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="女性口調">
+      <img src="female.png" alt="女性口調">
+      <div class="tone-label">女性口調</div>
+    </label>
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="中性口調">
+      <img src="natural.png" alt="中性口調">
+      <div class="tone-label">中性口調</div>
+    </label>
+  </div>
+</div>
+
+<div class="box">
+  <h3>話し方スタイル</h3>
+  <div class="button-row">
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="敬語">
+      <img src="teinei.png" alt="敬語">
+      <div class="tone-label">敬語</div>
+    </label>
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="カジュアル">
+      <img src="casual.png" alt="カジュアル">
+      <div class="tone-label">カジュアル</div>
+    </label>
+    <label class="tone-option">
+      <input type="checkbox" name="tone" value="フレンドリー">
+      <img src="friendly.png" alt="フレンドリー">
+      <div class="tone-label">フレンドリー</div>
+    </label>
+  </div>
+</div>
+
+<!-- ここに保存・読み込み・生成のボタンが入る場合は、さらに .box で囲んで追記可能 -->
+
+</body>
+</html>
